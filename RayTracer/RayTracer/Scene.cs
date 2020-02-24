@@ -9,7 +9,7 @@ namespace RayTracer
     {
         private int with = 1024;
         private int height = 768;
-        private Ray camera = new Ray(new Vector3(50f, 52f, 295.6f), Vector3.Normalize(new Vector3(0f, -0.042612f, -1f)));
+        private Ray camera = new Ray(new Vec(50.0, 52.0, 295.6), Vec.Normalize(new Vec(0f, -0.042612, -1)));
 
         private RandomHelper random = new RandomHelper(0);
 
@@ -24,28 +24,28 @@ namespace RayTracer
         }
 
         public Sphere[] spheres = {
-            new Sphere(1e5, new Vector3((float)1e5+1f, 40.8f, 81.6f), Vector3.Zero, new Vector3(.75f,.25f,.25f), Sphere.ReflectionType.DIFFUSE),             //Left
-            new Sphere(1e5, new Vector3((float)-1e5+99f, 40.8f, 81.6f), Vector3.Zero, new Vector3(.25f,.25f,.75f), Sphere.ReflectionType.DIFFUSE),           //Right
-            new Sphere(1e5, new Vector3(50f, 40.8f, (float)1e5), Vector3.Zero, new Vector3(.75f,.75f,.75f), Sphere.ReflectionType.DIFFUSE),                 //Back
-            new Sphere(1e5, new Vector3(50f, 40.8f, (float)-1e5+170f), Vector3.Zero, Vector3.Zero, Sphere.ReflectionType.DIFFUSE),                          //Front
-            new Sphere(1e5, new Vector3(50f, (float)1e5, 81.6f), Vector3.Zero, new Vector3(.75f,.75f,.75f), Sphere.ReflectionType.DIFFUSE),                 //Botom
-            new Sphere(1e5, new Vector3(50f, (float)-1e5+81.6f, 81.6f), Vector3.Zero, new Vector3(.75f,.75f,.75f), Sphere.ReflectionType.DIFFUSE),          //Top
-            new Sphere(16.5, new Vector3(27f, 16.5f, 47f), Vector3.Zero, Vector3.Multiply(new Vector3(1f,1f,1f), .999f), Sphere.ReflectionType.SPECULAR),   //Mirror
-            new Sphere(16.5, new Vector3(73f, 16.5f, 78f), Vector3.Zero, Vector3.Multiply(new Vector3(1f,1f,1f), .999f), Sphere.ReflectionType.REFRACTIVE), //Glass
-            new Sphere(600, new Vector3(50f, 681.6f-.27f, 81.6f), new Vector3(12f,12f,12f), Vector3.Zero, Sphere.ReflectionType.DIFFUSE),                //Lite
+            new Sphere(1e5, new Vec(1e5+1, 40.8, 81.6), new Vec(), new Vec(.75,.25,.25), Sphere.ReflectionType.DIFFUSE),             //Left
+            new Sphere(1e5, new Vec(-1e5+99, 40.8, 81.6), new Vec(), new Vec(.25,.25,.75), Sphere.ReflectionType.DIFFUSE),           //Right
+            new Sphere(1e5, new Vec(50, 40.8, 1e5),new Vec(), new Vec(.75,.75,.75), Sphere.ReflectionType.DIFFUSE),                 //Back
+            new Sphere(1e5, new Vec(50, 40.8, -1e5+170),new Vec(),new Vec(), Sphere.ReflectionType.DIFFUSE),                          //Front
+            new Sphere(1e5, new Vec(50, 1e5, 81.6),new Vec(), new Vec(.75,.75,.75), Sphere.ReflectionType.DIFFUSE),                 //Botom
+            new Sphere(1e5, new Vec(50, -1e5+81.6, 81.6),new Vec(), new Vec(.75,.75,.75), Sphere.ReflectionType.DIFFUSE),          //Top
+            new Sphere(16.5, new Vec(27, 16.5, 47),new Vec(), Vec.Multiply(new Vec(1,1,1), .999), Sphere.ReflectionType.SPECULAR),   //Mirror
+            new Sphere(16.5, new Vec(73, 16.5, 78),new Vec(), Vec.Multiply(new Vec(1,1,1), .999), Sphere.ReflectionType.REFRACTIVE), //Glass
+            new Sphere(600, new Vec(50, 681.6-.27, 81.6), new Vec(12,12,12),new Vec(), Sphere.ReflectionType.DIFFUSE),                //Lite
         };
 
-        public Vector3[] TraceScene(int samps)
+        public Vec[] TraceScene(int samps)
         {
             int samples = samps / 4;
-            Vector3 xDirectionIncrement = new Vector3((float)((double)with * .5135 / (double)height),0f,0f);
-            Vector3 yDirectionIncrement = Vector3.Multiply(Vector3.Normalize(Vector3.Cross(xDirectionIncrement, camera.Direction)), .5135f);
-            Vector3 colorVector = Vector3.Zero;
-            Vector3[] image = new Vector3[with * height];
+            Vec xDirectionIncrement = new Vec(((double)with * .5135 / (double)height),0,0);
+            Vec yDirectionIncrement = Vec.Multiply(Vec.Normalize(Vec.Cross(xDirectionIncrement, camera.Direction)), .5135);
+            Vec colorVector =new Vec();
+            Vec[] image = new Vec[with * height];
 
             for(int i =0; i<image.Length; i++)
             {
-                image[i] = Vector3.Zero;
+                image[i] =new Vec();
             }
 
             for(int y=0; y<height; y++)
@@ -60,7 +60,7 @@ namespace RayTracer
                     }
                     for(int sy=0, i= (height - y - 1) * with + x; sy<2; sy++)
                     {
-                        for (int sx = 0; sx < 2; sx++, colorVector = Vector3.Zero)
+                        for (int sx = 0; sx < 2; sx++, colorVector =new Vec())
                         {
                             for (int s = 0; s < samples; s++)
                             {
@@ -69,31 +69,31 @@ namespace RayTracer
                                 double r2 = 2.0 * random.NextDouble(seed);
                                 double dy = r2 < 1.0 ? Math.Sqrt(r2) - 1.0 : 1.0 - Math.Sqrt(2.0 - r2);
 
-                                Vector3 part1 = Vector3.Multiply(xDirectionIncrement, (float)(((sx + .5 + dx) / 2.0 + x) / with - .5));
-                                Vector3 part2 = Vector3.Multiply(yDirectionIncrement, (float)(((sy + .5 + dy) / 2.0 + y) / height - .5));
+                                Vec part1 = Vec.Multiply(xDirectionIncrement, (((sx + .5 + dx) / 2.0 + x) / with - .5));
+                                Vec part2 = Vec.Multiply(yDirectionIncrement, (((sy + .5 + dy) / 2.0 + y) / height - .5));
 
-                                Vector3 radianceDirection = Vector3.Add(part1, part2);
-                                radianceDirection = Vector3.Add(radianceDirection, camera.Direction);
+                                Vec radianceDirection = Vec.Add(part1, part2);
+                                radianceDirection = Vec.Add(radianceDirection, camera.Direction);
 
-                                Vector3 radianceOrigin = Vector3.Multiply(radianceDirection, 140f);
-                                radianceOrigin = Vector3.Add(camera.Origin, radianceOrigin);
+                                Vec radianceOrigin = Vec.Multiply(radianceDirection, 140);
+                                radianceOrigin = Vec.Add(camera.Origin, radianceOrigin);
 
-                                Ray radianceRay = new Ray(radianceOrigin, Vector3.Normalize(radianceDirection));
+                                Ray radianceRay = new Ray(radianceOrigin, Vec.Normalize(radianceDirection));
 
-                                Vector3 radiance = ComputeRadiance(radianceRay, 0, seed);
-                                radiance = Vector3.Multiply(radiance, 1f / samples);
+                                Vec radiance = ComputeRadiance(radianceRay, 0, seed);
+                                radiance = Vec.Multiply(radiance, 1.0 / (double)samples);
 
 
-                                colorVector = Vector3.Add(colorVector, radiance);
+                                colorVector = Vec.Add(colorVector, radiance);
                             }
 
 
 
-                            Vector3 clampedColor = new Vector3((float)ClampDoulbe(colorVector.X), (float)ClampDoulbe(colorVector.Y), (float)ClampDoulbe(colorVector.Z));
-                            clampedColor = Vector3.Multiply(clampedColor, .25f);
+                            Vec clampedColor = new Vec(ClampDoulbe(colorVector.X), ClampDoulbe(colorVector.Y), ClampDoulbe(colorVector.Z));
+                            clampedColor = Vec.Multiply(clampedColor, .25);
 
-                            image[i] = Vector3.Add(image[i], clampedColor);
-                            if(float.IsNaN(image[i].X) || float.IsNaN(image[i].Y) || float.IsNaN(image[i].Z))
+                            image[i] = Vec.Add(image[i], clampedColor);
+                            if(double.IsNaN(image[i].X) || double.IsNaN(image[i].Y) || double.IsNaN(image[i].Z))
                             {
                                 throw new Exception();
                             }
@@ -105,13 +105,13 @@ namespace RayTracer
             return image;
         }
 
-        private Vector3 ComputeRadiance(Ray ray, int depth, int seed)
+        private Vec ComputeRadiance(Ray ray, int depth, int seed)
         {
             RayIntersectionData data = GetRayIntersectionData(ray);
 
             
             if (!data.Intersects || depth > 300) {
-                return Vector3.Zero;
+                return new Vec();
             }
             
             Sphere sphere = spheres[data.ClosestSpereId];
@@ -119,11 +119,11 @@ namespace RayTracer
             double distanceToIntersection = data.Distance;
             int id = data.ClosestSpereId;
 
-            Vector3 intersectionPoint = ray.Origin + Vector3.Multiply(ray.Direction, (float)distanceToIntersection);
-          //  intersectionPoint = intersectionPoint + Vector3.Multiply(Vector3.Normalize(intersectionPoint), 0.05f);
-            Vector3 sphereNormal = Vector3.Normalize(Vector3.Subtract(intersectionPoint, sphere.Position));
-            Vector3 surfaceNormal = Vector3.Dot(sphereNormal, ray.Direction) < 0f ? sphereNormal : Vector3.Multiply(sphereNormal, -1f);
-            Vector3 color = sphere.Color;
+            Vec intersectionPoint = ray.Origin + Vec.Multiply(ray.Direction, distanceToIntersection);
+          //  intersectionPoint = intersectionPoint + Vec.Multiply(Vec.Normalize(intersectionPoint), 0.05);
+            Vec sphereNormal = Vec.Normalize(Vec.Subtract(intersectionPoint, sphere.Position));
+            Vec surfaceNormal = Vec.Dot(sphereNormal, ray.Direction) < 0 ? sphereNormal : Vec.Multiply(sphereNormal, -1.0);
+            Vec color = sphere.Color;
 
 
             double maxRefl = color.X > color.Y && color.X > color.Z ? color.X : color.Y > color.Z ? color.Y : color.Z;
@@ -134,7 +134,7 @@ namespace RayTracer
             {
                 double randNum = random.NextDouble(seed);
                 if (randNum < maxRefl ) {
-                    color = Vector3.Multiply(color, 1f / (float)maxRefl);
+                    color = Vec.Multiply(color, 1.0 / maxRefl);
                 }
                 else {
                     return sphere.Emission;
@@ -143,30 +143,30 @@ namespace RayTracer
 
             if(sphere.Reflection == Sphere.ReflectionType.DIFFUSE)
             {
-                double angleRand = random.NextDouble(seed) *2f*Math.PI;
+                double angleRand = random.NextDouble(seed) *2*Math.PI;
                 double distanceRand = random.NextDouble(seed);
                 double distanceRandSqtr = Math.Sqrt(distanceRand);
 
-                Vector3 w = surfaceNormal;
-                Vector3 u = Vector3.Normalize(Vector3.Cross(Math.Abs(w.X) > .1 ? new Vector3(0f, 1f, 0f) : new Vector3(1f, 0f, 0f), w));
-                Vector3 v = Vector3.Cross(w, u);
+                Vec w = surfaceNormal;
+                Vec u = Vec.Normalize(Vec.Cross(Math.Abs(w.X) > .1 ? new Vec(0, 1, 0) : new Vec(1, 0, 0), w));
+                Vec v = Vec.Cross(w, u);
 
-                Vector3 ref1 = Vector3.Multiply(u, (float)Math.Cos(angleRand));
-                ref1 = Vector3.Multiply(ref1, (float)distanceRandSqtr);
-                Vector3 ref2 = Vector3.Multiply(v, (float)Math.Sin(angleRand));
-                ref2 = Vector3.Multiply(ref2, (float)distanceRandSqtr);
-                Vector3 ref3 = Vector3.Multiply(w, (float)Math.Sqrt(1 - distanceRand));
-                Vector3 ref4 = Vector3.Add(ref1, ref2);
-                ref4 = Vector3.Add(ref4, ref3);
+                Vec ref1 = Vec.Multiply(u, Math.Cos(angleRand));
+                ref1 = Vec.Multiply(ref1, distanceRandSqtr);
+                Vec ref2 = Vec.Multiply(v, Math.Sin(angleRand));
+                ref2 = Vec.Multiply(ref2, distanceRandSqtr);
+                Vec ref3 = Vec.Multiply(w, Math.Sqrt(1 - distanceRand));
+                Vec ref4 = Vec.Add(ref1, ref2);
+                ref4 = Vec.Add(ref4, ref3);
 
-                Vector3 reflectionRayRand = Vector3.Normalize(ref4);
+                Vec reflectionRayRand = Vec.Normalize(ref4);
 
-                Vector3 nextRadiance = ComputeRadiance(new Ray(intersectionPoint, reflectionRayRand), depth, seed);
+                Vec nextRadiance = ComputeRadiance(new Ray(intersectionPoint, reflectionRayRand), depth, seed);
 
-                Vector3 result = Vector3.Multiply(color, nextRadiance);
-                result = Vector3.Add(sphere.Emission, result);
+                Vec result = Vec.Multiply(color, nextRadiance);
+                result = Vec.Add(sphere.Emission, result);
 
-                if (float.IsNaN(result.X) || float.IsNaN(result.Y) || float.IsNaN(result.Z))
+                if (double.IsNaN(result.X) || double.IsNaN(result.Y) || double.IsNaN(result.Z))
                 {
                     throw new Exception();
                 } 
@@ -176,17 +176,17 @@ namespace RayTracer
             else if(sphere.Reflection == Sphere.ReflectionType.SPECULAR)
             {
                 //FUCK UP POINT
-                Vector3 ray1 = Vector3.Multiply(sphereNormal, 2f);
-                float dot1 = Vector3.Dot(sphereNormal, ray.Direction);
-                ray1 = Vector3.Multiply(ray1, dot1);
-                Vector3 ray2 = Vector3.Subtract(ray.Direction, ray1);
+                Vec ray1 = Vec.Multiply(sphereNormal, 2);
+                double dot1 = Vec.Dot(sphereNormal, ray.Direction);
+                ray1 = Vec.Multiply(ray1, dot1);
+                Vec ray2 = Vec.Subtract(ray.Direction, ray1);
 
-                Vector3 nextRadiance = ComputeRadiance(new Ray(intersectionPoint, ray2), depth, seed);
+                Vec nextRadiance = ComputeRadiance(new Ray(intersectionPoint, ray2), depth, seed);
 
-                Vector3 result = Vector3.Multiply(color, nextRadiance);
-                result = Vector3.Add(sphere.Emission, result);
+                Vec result = Vec.Multiply(color, nextRadiance);
+                result = Vec.Add(sphere.Emission, result);
 
-                if (float.IsNaN(result.X) || float.IsNaN(result.Y) || float.IsNaN(result.Z))
+                if (double.IsNaN(result.X) || double.IsNaN(result.Y) || double.IsNaN(result.Z))
                 {
                     throw new Exception();
                 }
@@ -196,27 +196,27 @@ namespace RayTracer
             else
             {
                 //FUCK UP POINT
-                Vector3 ray1 = Vector3.Multiply(sphereNormal, 2f);
-                float dot1 = Vector3.Dot(sphereNormal, ray.Direction);
-                ray1 = Vector3.Multiply(ray1, dot1);
-                Vector3 ray2 = Vector3.Subtract(ray.Direction, ray1);
+                Vec ray1 = Vec.Multiply(sphereNormal, 2f);
+                double dot1 = Vec.Dot(sphereNormal, ray.Direction);
+                ray1 = Vec.Multiply(ray1, dot1);
+                Vec ray2 = Vec.Subtract(ray.Direction, ray1);
 
                 Ray reflectionRay = new Ray(intersectionPoint, ray2);
-                bool goesInto = Vector3.Dot(sphereNormal, surfaceNormal)>0;
+                bool goesInto = Vec.Dot(sphereNormal, surfaceNormal)>0;
                 double nc = 1.0;
                 double nt = 1.5;
                 double nnt = goesInto ? nc / nt : nt / nc;
-                double ddn = Vector3.Dot(ray.Direction, surfaceNormal);
+                double ddn = Vec.Dot(ray.Direction, surfaceNormal);
                 double cos2t = 1.0 - nnt * nnt * (1.0 - ddn * ddn);
 
                 if (cos2t < 0)
                 {
-                    Vector3 nextRadiance = ComputeRadiance(reflectionRay, depth, seed);
+                    Vec nextRadiance = ComputeRadiance(reflectionRay, depth, seed);
 
-                    Vector3 result = Vector3.Multiply(color, nextRadiance);
-                    result = Vector3.Add(sphere.Emission, result);
+                    Vec result = Vec.Multiply(color, nextRadiance);
+                    result = Vec.Add(sphere.Emission, result);
 
-                    if (float.IsNaN(result.X) || float.IsNaN(result.Y) || float.IsNaN(result.Z))
+                    if (double.IsNaN(result.X) || double.IsNaN(result.Y) || double.IsNaN(result.Z))
                     {
                         throw new Exception();
                     }
@@ -225,51 +225,51 @@ namespace RayTracer
                 }
                 else
                 {
-                    Vector3 part1 = Vector3.Multiply(ray.Direction, (float)nnt);
-                    float goesIntoMultiplier = goesInto ? 1.0f : -1.0f;
-                    Vector3 part2 = Vector3.Multiply(sphereNormal, goesIntoMultiplier);
-                    Vector3 part3 = Vector3.Multiply(part2, (float)(ddn * nnt + Math.Sqrt(cos2t)));
-                    Vector3 part4 = Vector3.Subtract(part1, part3);
-                    Vector3 travelDirection = Vector3.Normalize(part4);
+                    Vec part1 = Vec.Multiply(ray.Direction, nnt);
+                    double goesIntoMultiplier = goesInto ? 1.0 : -1.0;
+                    Vec part2 = Vec.Multiply(sphereNormal, goesIntoMultiplier);
+                    Vec part3 = Vec.Multiply(part2, (ddn * nnt + Math.Sqrt(cos2t)));
+                    Vec part4 = Vec.Subtract(part1, part3);
+                    Vec travelDirection = Vec.Normalize(part4);
 
                     double a = nt - nc;
                     double b = nt + nc;
                     double R0 = a * a / (b * b);
-                    double c = 1.0 - (goesInto ? -ddn : Vector3.Dot(travelDirection, sphereNormal));
+                    double c = 1.0 - (goesInto ? -ddn : Vec.Dot(travelDirection, sphereNormal));
                     double Re = R0 + (1 - R0) * c * c * c * c * c;
                     double Tr = 1.0 - Re;
                     double P = .25 + .5 * Re;
                     double RP = Re / P;
                     double TP = Tr / (1.0 - P);
 
-                    Vector3 radianceUsed = Vector3.Zero;
+                    Vec radianceUsed =new Vec();
 
                     if (depth > 2)
                     {
                         if(random.NextDouble(seed) < P) {
                             radianceUsed = ComputeRadiance(reflectionRay, depth, seed);
-                            radianceUsed = Vector3.Multiply(radianceUsed, (float)RP);
+                            radianceUsed = Vec.Multiply(radianceUsed, RP);
                         }
                         else
                         {
                             radianceUsed = ComputeRadiance(new Ray(intersectionPoint, travelDirection), depth, seed);
-                            radianceUsed = Vector3.Multiply(radianceUsed, (float)TP);
+                            radianceUsed = Vec.Multiply(radianceUsed, TP);
                         }
                     }
                     else
                     {
-                        Vector3 nextRadiance1 = ComputeRadiance(reflectionRay, depth, seed);
-                        nextRadiance1 = Vector3.Multiply(nextRadiance1, (float)Re);
-                        Vector3 nextRadiance2 = ComputeRadiance(new Ray(intersectionPoint, travelDirection), depth, seed);
-                        nextRadiance2 = Vector3.Multiply(nextRadiance2, (float)Tr);
+                        Vec nextRadiance1 = ComputeRadiance(reflectionRay, depth, seed);
+                        nextRadiance1 = Vec.Multiply(nextRadiance1, Re);
+                        Vec nextRadiance2 = ComputeRadiance(new Ray(intersectionPoint, travelDirection), depth, seed);
+                        nextRadiance2 = Vec.Multiply(nextRadiance2, Tr);
 
-                        radianceUsed = Vector3.Add(nextRadiance1, nextRadiance2);
+                        radianceUsed = Vec.Add(nextRadiance1, nextRadiance2);
                     }
 
-                    Vector3 result = Vector3.Multiply(color, radianceUsed);
-                    result = Vector3.Add(sphere.Emission, result);
+                    Vec result = Vec.Multiply(color, radianceUsed);
+                    result = Vec.Add(sphere.Emission, result);
 
-                    if (float.IsNaN(result.X) || float.IsNaN(result.Y) || float.IsNaN(result.Z))
+                    if (double.IsNaN(result.X) || double.IsNaN(result.Y) || double.IsNaN(result.Z))
                     {
                         throw new Exception();
                     }

@@ -23,11 +23,11 @@ namespace RayTracer
 
             Scene scene = new Scene();
 
-            Vector3[] image = scene.TraceScene(4);
+            Vec[] image = scene.TraceScene(4);
 
             StringBuilder sb = new StringBuilder();
 
-            foreach(Vector3 pixel in image)
+            foreach(Vec pixel in image)
             {
                 int x = GetDisplayInt(pixel.X);
                 int y = GetDisplayInt(pixel.Y);

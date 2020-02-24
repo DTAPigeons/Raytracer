@@ -9,12 +9,12 @@ namespace RayTracer
     class Sphere
     {
         private double radius;
-        private Vector3 position;
-        private Vector3 emission;
-        private Vector3 color;
+        private Vec position;
+        private Vec emission;
+        private Vec color;
         private ReflectionType reflection;
 
-        public Sphere(double radius, Vector3 position, Vector3 emission, Vector3 color, ReflectionType reflection)
+        public Sphere(double radius, Vec position, Vec emission, Vec color, ReflectionType reflection)
         {
             this.Radius = radius;
             this.Position = position;
@@ -24,19 +24,19 @@ namespace RayTracer
         }
 
         public double Radius { get => radius; set => radius = value; }
-        public Vector3 Position { get => position; set => position = value; }
-        public Vector3 Emission { get => emission; set => emission = value; }
-        public Vector3 Color { get => color; set => color = value; }
+        public Vec Position { get => position; set => position = value; }
+        public Vec Emission { get => emission; set => emission = value; }
+        public Vec Color { get => color; set => color = value; }
         internal ReflectionType Reflection { get => reflection; set => reflection = value; }
 
         public double IntersectWithRay(Ray ray)
         {
             // Solve t^2*d.d + 2*t*(o-p).d + (o-p).(o-p)-R^2 = 0
-            Vector3 op = Vector3.Subtract(Position, ray.Origin); 
+            Vec op = Position - ray.Origin;
             double t;
             double epsilon = 1e-4;
-            double b = Vector3.Dot(op, ray.Direction); // 1/2 b from the quadratic equesion
-            double detetminant = b*b-Vector3.Dot(op,op)+Radius*Radius;
+            double b = Vec.Dot(op, ray.Direction); // 1/2 b from the quadratic equesion
+            double detetminant = b*b-op.DotWith(op)+Radius*Radius;
             if (detetminant < 0)
             {
                 return 0.0;

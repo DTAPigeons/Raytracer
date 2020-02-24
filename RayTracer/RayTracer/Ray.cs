@@ -7,10 +7,10 @@ namespace RayTracer
 {
     class Ray
     {
-        public Vector3 Origin { get; set; }
-        public Vector3 Direction { get; set; }
+        public Vec Origin { get; set; }
+        public Vec Direction { get; set; }
 
-        public Ray(Vector3 origin, Vector3 direction)
+        public Ray(Vec origin, Vec direction)
         {
             Origin = origin;
             Direction = direction;
